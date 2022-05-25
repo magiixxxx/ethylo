@@ -1,0 +1,100 @@
+#lecteure courbes
+
+
+T=[][] #variable globale saugarde des tableaux avec les point particulier de la courbe qui sont toutes les 10 min
+
+seuil = 450   #corespond au seuil pour considerer quelqu un comme sous alc
+
+
+def lecture (P,T,A,R,S): #valeur selectionne par la personne P,T,A,R,S sur l'écran tactile
+
+    A1=0
+    if A<=20:
+      A1=1
+    elif A<=30:
+      A1=2
+    else :
+      A1=3
+
+    P1=0
+    if P<=60:
+      P1=1
+    elif P<=80:
+      P1=2
+    else :
+      P1=3
+
+    T1=0
+    if T<=1.60:
+      T1=1
+    elif T<=1.80:
+      T1=2
+    else :
+      T1=3
+
+    R1=0
+    if R=="jamais":
+      R1=1
+    elif R=="souvent":
+      R1=2
+    else :
+      R1=3
+   
+    S1=0
+    if S=="femme":
+      S1=1
+    else :
+      S1=2
+  
+    return(P1,T1,A1,R1,S1)
+
+
+""" courbe sous la forme T[][] avec T[0][0]=[P,T,A,R,S]
+et T[0][1]=[850,800] courbe alc en fonction du temps( point particulier de la courbe)"""
+
+def selection_du_tableau(A,P,T,R,S):
+
+    L=[]
+    P1,T2,A2,R2,S2=lecture (P,T,A,R,S)
+    L=[P1,T2,A2,R2,S2]
+
+    for i in range (128):
+        n=0
+        for j in range (5):
+            if T[i][0][j]==L[j]:
+                n+=1
+        if n==5:
+            return (i) #la ligne du tableau
+
+def analyse_courbe(A,P,T,R,S,taux):     #taux -> valeur renvoye par l arduino
+    i=selection_du_tableau(A,P,T,R,S)
+    k=0
+
+    while taux > T[i][1][k]:
+        k+=1
+    V0=T[i][1][k-1]   
+    V1=T[i][1][k]
+    a=(V0-V1)/10
+    t=(k-1)*10+(taux-V0)/a
+    return(t)
+
+def t_final(A,P,T,R,S):
+    i=selection_du_tableau(A,P,T,R,S)
+    k=0
+    while T[i][1][k]> seuil:
+        k+1
+    return (10*k)
+
+def temps_restant(A,P,T,R,S,taux):
+    t=analyse_courbe(A,P,T,R,S,taux)
+    tf=t_final(A,P,T,R,S)
+    return (tf-t)
+
+
+
+    
+
+
+
+
+
